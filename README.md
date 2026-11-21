@@ -3,7 +3,7 @@ Name TBD. Multi-media expert system for diagnosing tomato plant ailments and sug
 
 ## Setting up & running the project
 
-### UV
+### Setup using uv
 **Prerequisite:** [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 **Clone**:
@@ -21,7 +21,7 @@ uv run streamlit run src/app.py
 
 The website should be viewable at [localhost:8501](http://localhost:8501), but check the port used when streamlit is ran.
 
-### Manual
+### Manual setup
 
 **Prerequisite:** Python 3.13+
 
