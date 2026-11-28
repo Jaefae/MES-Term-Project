@@ -1,0 +1,151 @@
+# Question types
+# mcq - 1 of many
+# mmcq - many of many
+# bool - yes or no
+# scale - float [0...1]
+facts:
+  yellowing: {type: bool}
+  yellowing_location: {type: mmcq, choices: ["Leaves", "Stems", "Fruits"]}
+  yellowing_leaves_location: {type: mmcq, choices: ["Lower", "Upper"]}
+  yellowing_pattern: {type: mmcq, choices: ["Whole leaf", "Around spots"]}
+  browning: {type: bool}
+  browning_location: {type: mmcq, choices: ["Leaves", "Stems", "Fruits"]}
+  browning_leaves_location: {type: mmcq, choices: ["Lower", "Upper"]}
+  leaf_spots: {type: bool}
+  spot_rings: {type: bool}
+  spot_black_dots: {type: bool}
+  brown_gray_leaf_lesions: {type: bool}
+  white_underside_growth: {type: bool}
+  # derived by rules, no question
+  lower_leaf_spots: {type: bool}
+
+questions:
+  - id: yellowing
+    question: "Does the plant have yellowing? (On any part)"
+
+  - id: yellowing_location
+    question: "Where is the yellowing located?"
+    if: {yellowing: True}
+
+  - id: yellowing_leaves_location
+    question: "Which leaves have yellowing?"
+    if: {yellowing_location: Leaves}
+
+  - id: yellowing_pattern
+    question: "What does the yellowing look like? (Select all that apply)"
+    if: {yellowing_location: Leaves}
+
+  - id: browning
+    question: "Does the plant have browning? (On any part)"
+
+  - id: browning_location
+    question: "Where is the browning located?"
+    if: {browning: True}
+
+  - id: browning_leaves_location
+    question: "Which leaves have browning?"
+    if: {browning_location: Leaves}
+
+  - id: leaf_spots
+    question: "Are there distinct spots on the leaves?"
+    if: {browning_location: Leaves}
+
+  - id: spot_rings
+    question: "Do any of the spots have target-like rings?"
+    unsure: true
+    if: {leaf_spots: True}
+
+  - id: spot_black_dots
+    question: "Do any of the spots have tiny black dots in the center? (A magnifier helps)"
+    unsure: true
+    if: {leaf_spots: True}
+
+  - id: brown_gray_leaf_lesions
+    question: "Are there irregular, water-soaked patches that are light brown, tan or gray on any leaves?"
+    unsure: true
+    if: {browning_location: Leaves}
+
+  - id: white_underside_growth
+    question: "In humid conditions, is there white, cottony growth on the undersides of those leaves?"
+    unsure: true
+    if: {brown_gray_leaf_lesions: True}
+
+rules:
+  - id: r1
+    if: {browning_leaves_location: Lower, leaf_spots: True}
+    then: {lower_leaf_spots: True}
+    sources: [umass_blights]
+
+  - id: r2
+    if: {lower_leaf_spots: True, spot_rings: True}
+    then: {suspect: early_blight}
+    sources: [umass_blights]
+
+  - id: r3
+    if: {lower_leaf_spots: True, spot_black_dots: True}
+    then: {suspect: septoria_leaf_spot}
+    sources: [umass_blights]
+
+  - id: r4
+    if: {yellowing_leaves_location: Lower, yellowing_pattern: Whole leaf}
+    then: {suspect: nitrogen_deficiency}
+    sources: [uf_ep081]
+
+  - id: r5
+    if: {brown_gray_leaf_lesions: True, white_underside_growth: True}
+    then: {suspect: late_blight}
+    sources: [ncstate_late_blight]
+
+ailments:
+  early_blight:
+    name: "Early blight"
+    advice:
+      - "Keep leaves dry: use drip or trickle irrigation, space plants wider and stake them."
+      - "Maintain adequate nitrogen through the season, which can help delay the disease."
+      - "Protectant fungicide sprays at regular intervals can delay onset. Follow the product label."
+      - "After harvest, work plant debris into the soil, control weeds and keep tomatoes out of that spot for at least two years."
+      - "Next season, consider a resistant or tolerant variety."
+
+  septoria_leaf_spot:
+    name: "Septoria leaf spot"
+    advice:
+      - "Keep leaves dry: use drip or trickle irrigation, space plants wider and stake them."
+      - "Maintain adequate nitrogen through the season, which can help delay disease."
+      - "Protectant fungicide sprays at regular intervals can delay onset. Follow the product label."
+      - "After harvest, work plant debris into the soil, control weeds and keep tomatoes out of that spot for at least two years."
+      - "Most tomato varieties are susceptible, so do not rely on variety choice."
+
+  nitrogen_deficiency:
+    name: "Nitrogen deficiency"
+    advice:
+      - "Confirm with a soil or plant tissue test before adding fertilizer."
+      - "If a test confirms low nitrogen, fertilize at the rate recommended for your results."
+
+  late_blight:
+    name: "Late blight"
+    advice:
+      - "Act quickly: remove infected plants and fruit, and check the remaining plants often."
+      - "Do not let water remain on leaves for long periods."
+      - "Home garden products with copper or chlorothalonil are the effective options. Spray weekly to protect healthy plants and follow the label."
+      - "Sprays may not control the disease once it has appeared."
+      - "Next season, plant early and consider resistant varieties such as Defiant PhR or Mountain Gem."
+
+sources:
+  uf_ep081:
+    title: "Plant Tissue Analysis and Interpretation for Vegetable Crops in Florida (HS964)"
+    authors: "George Hochmuth and Edward A. Hanlon"
+    publisher: "UF/IFAS Extension"
+    url: "https://ask.ifas.ufl.edu/publication/EP081/pdf"
+
+  umass_blights:
+    title: "Tomato, Leaf Blights"
+    authors: "Bess Dicklow, Andy Cavanagh, and Ruth Hazzard"
+    publisher: "UMass Extension Vegetable Program"
+    url: "https://www.umass.edu/agriculture-food-environment/vegetable/fact-sheets/tomato-leaf-blights"
+
+  ncstate_late_blight:
+    title: "Tomato Late Blight Vegetable Pathology Factsheets"
+    authors: "Lina Quesada-Ocampo, Inga Meadows, Ella Hinchliffe, and Sara Villani"
+    publisher: "NC State Extension"
+    url: "https://content.ces.ncsu.edu/tomato-late-blight"
+
