@@ -66,7 +66,9 @@ def show_results(kb: dict, answers: dict):
         for line in kb["ailments"][ailment_id]["advice"]:
             st.markdown("- " + line)
 
-    used = {s for r in kb["rules"] if r["id"] in fired for s in r.get("sources", [])}
+    used = {source for rule in kb["rules"] 
+            if rule["id"] in fired 
+            for source in rule.get("sources", [])}
     if used:
         st.markdown("**Sources**")
         for source_id in sorted(used):
